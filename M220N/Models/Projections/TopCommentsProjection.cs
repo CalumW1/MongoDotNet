@@ -21,6 +21,6 @@ namespace M220N.Models.Projections
         [BsonElement("_id")]
         public string Id { get; set; }
 
-        public int Count { get; set; }
+        public int count { get; set; }
     }
 }

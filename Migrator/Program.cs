@@ -18,7 +18,7 @@ namespace Migrator
         static IMongoCollection<Movie> _moviesCollection;
 
         // TODO: Update this connection string as needed.
-        static string mongoConnectionString = "";
+        static string mongoConnectionString = "mongodb+srv://m001-student:Trivium19-@mflix.nhpic.mongodb.net/myFirstDatabase?retryWrites=true&w=majority";
         
         static async Task Main(string[] args)
         {
@@ -111,6 +111,7 @@ namespace Migrator
             return _moviesCollection
                 .Aggregate(PipelineDefinition<Movie, Movie>.Create(pipeline))
                 .ToList();
+
         }
 
         /// <summary>

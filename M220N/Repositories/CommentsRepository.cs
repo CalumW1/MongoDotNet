@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using M220N.Models;
@@ -147,7 +148,40 @@ namespace M220N.Repositories
                 // //   .Group(...)
                 // //   .Sort(...).Limt(...).Project(...).ToListAsync()
 
+                // pipeline steps: 
+                // match: movies for comments
+                // Group: movies and commentors together 
+                // sort: in Descinding order
+                // limit: to the first 20
+                // Return to list
+
+
+
+                /*var pipeline = new[] 
+                { 
+                    new BsonDocument("$group",
+                        new BsonDocument
+                        {
+                            { "_id", "$email" },
+                        { "count",
+                            new BsonDocument("$sum", 1) }
+                        }),
+                    new BsonDocument("$sort",
+                    new BsonDocument("count", -1)),
+                    new BsonDocument("$limit", 20)
+                };*/
+
+                result = await _commentsCollection
+                    .WithReadConcern(ReadConcern.Majority)
+                    .Aggregate()
+                    .Group(c => c.Email, g => new { Id = g.Key, count = g.Count() })
+                    .SortByDescending(g => g.count)
+                    .Limit(20)
+                    .Project(rp => new ReportProjection { Id = rp.Id, count = rp.count })
+                    .ToListAsync();
+
                 return new TopCommentsProjection(result);
+
             }
             catch (Exception ex)
             {
