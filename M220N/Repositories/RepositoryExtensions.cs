@@ -11,7 +11,7 @@ namespace M220N.Repositories
             servicesBuilder.AddSingleton<IMongoClient, MongoClient>(s =>
             {
                 var uri = s.GetRequiredService<IConfiguration>()["MongoUri"];
-                return new MongoClient("mongodb+srv://m001-student:Trivium19-@mflix.nhpic.mongodb.net/myFirstDatabase?retryWrites=true&w=majority");
+                return new MongoClient(uri);
             });
             servicesBuilder.AddSingleton<MoviesRepository>();
             servicesBuilder.AddSingleton<UsersRepository>();

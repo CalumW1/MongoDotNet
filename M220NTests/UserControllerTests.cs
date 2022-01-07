@@ -164,7 +164,8 @@ namespace M220NTests
             var commentResponse = (TopCommentsProjection) ok.Value;
 
             Assert.AreEqual(20, commentResponse.Report.Count);
-            Assert.AreEqual(277, commentResponse.Report.First().Count);
+            // Assert.AreEqual(277, commentResponse.Report.First().Count);
+            Assert.AreEqual(277, commentResponse.Report.Count());
             Assert.AreEqual("roger_ashton-griffiths@gameofthron.es", commentResponse.Report.First().Id);
         }
     }

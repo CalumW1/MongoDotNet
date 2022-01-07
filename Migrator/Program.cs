@@ -36,10 +36,16 @@ namespace Migrator
                 // (https://mongodb.github.io/mongo-csharp-driver/2.12/apidocs/html/T_MongoDB_Driver_ReplaceOneModel_1.htm).
                 //
                 // // bulkWriteDatesResult = await _moviesCollection.BulkWriteAsync(...
-
-                Console.WriteLine($"{bulkWriteDatesResult.ProcessedRequests.Count} records updated.");
+                List<ReplaceOneModel<Movie>> models = new List<ReplaceOneModel<Movie>>(0);
+                foreach (Movie movie in datePipelineResults)
+                {
+                    ReplaceOneModel<Movie> model = new ReplaceOneModel<Movie>(Builders<Movie>.Filter.Where(x => x.Id == movie.Id), movie);
+                    models.Add(model);
+                }
+                bulkWriteDatesResult = await _moviesCollection.BulkWriteAsync(models, new BulkWriteOptions() { IsOrdered = false });
+                    Console.WriteLine($"{bulkWriteDatesResult.ProcessedRequests.Count} records updated.");
             }
-
+            
             var ratingPipelineResults = TransformRatingPipeline();
             Console.WriteLine($"I found {ratingPipelineResults.Count} docs where the imdb.rating field is not a number type.");
 
@@ -51,7 +57,13 @@ namespace Migrator
                 // (https://mongodb.github.io/mongo-csharp-driver/2.12/apidocs/html/T_MongoDB_Driver_ReplaceOneModel_1.htm).
                 //
                 // // bulkWriteRatingsResult = await _moviesCollection.BulkWriteAsync(...
-
+                List<ReplaceOneModel<Movie>> models = new List<ReplaceOneModel<Movie>>(0);
+                foreach(Movie movie in ratingPipelineResults)
+                {
+                    ReplaceOneModel<Movie> model = new ReplaceOneModel<Movie>(Builders<Movie>.Filter.Where(x => x.Id == movie.Id), movie);
+                    models.Add(model);
+                }
+                bulkWriteRatingsResult = await _moviesCollection.BulkWriteAsync(models, new BulkWriteOptions() { IsOrdered = false });
                 Console.WriteLine($"{bulkWriteRatingsResult.ProcessedRequests.Count} records updated.");
             }
 
@@ -111,7 +123,6 @@ namespace Migrator
             return _moviesCollection
                 .Aggregate(PipelineDefinition<Movie, Movie>.Create(pipeline))
                 .ToList();
-
         }
 
         /// <summary>
